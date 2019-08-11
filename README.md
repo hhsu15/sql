@@ -225,7 +225,7 @@ It's a date field which takes less space than DATETIME
 ```
 CREATE TABLE my_table(
 	name VARCHR(50),
-    time_stamp TIMESTAMP DEFAULT NOW() ONUPDATE CURRENT_TIMESTAMP  # on update it will update to current timestamp, CURRENT_TIMESTAMP is same as now()
+    time_stamp TIMESTAMP DEFAULT NOW() ON UPDATE CURRENT_TIMESTAMP  # on update it will update to current timestamp, CURRENT_TIMESTAMP is same as now()
 )
 ```
 
@@ -290,6 +290,7 @@ create table orders (
 	amount int,
 	customer_id int,
 	FOREIGN KEY(customer_id) REFERENCES customers(id)  # by specifying the foreign key, you can constrain adding record with the key that does not exist in the reference table
+		ON DELETE CASCADE  # on delete of the customer id this record will be deleted too
 );
 
 ```
@@ -314,5 +315,5 @@ group by c.id;
 For exmaple, Viewers table and Movies table.
  - One viewer can review many movies, and one movie can be reviewed by many viewers 
  - We will need an inbetween table for reviews which has foreign key to the movies and viewers tables
-
-
+### instgram schema
+Refer to `instgram.sql`
