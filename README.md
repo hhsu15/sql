@@ -273,6 +273,15 @@ SELECT *,
 	END AS new_col
 FROM <TABLE>
 ```
+## IF 
+You can also use if 
+```
+SELECT
+	*,
+	IF(name like '%hsin%', 'maybe Hsin', 'not Hsin') as my_guess
+FROM <TABLE);
+
+```
 
 ## JOIN
 ### one to many relationship
@@ -317,3 +326,92 @@ For exmaple, Viewers table and Movies table.
  - We will need an inbetween table for reviews which has foreign key to the movies and viewers tables
 ### instgram schema
 Refer to `instgram.sql`
+
+# More SQL thing...
+## Keys
+- Natural Key/Business Key/Domain Key (are the same thing) VS Artificial Key
+  - Naural Key example: First Name, Last Name, Address 
+  - Artificial Key: Id, often time the primary key
+
+- Secondary Key
+  - candidates that are not selected as primary key are called Secondary Key
+    - example: eamil address in the Customer table is secondary key, if customer id is chosen to be primary key
+- Simple Key
+  - A column that can uniquely identify a row. 
+    - example: employee_id in Employees table
+
+- Super Key
+  - Any combination of columns that can make uniquely ideitify a single row.
+  - A minimum key would be the minimum fields that make a row uniuqe. Id can be a minimum key. Email address can be a mimumn key for a customer table too.
+## Referencial Integrity
+Multiple tables share a relationship based on data stored in the tables, and that relationship has to remain consistent. 
+- example: if you have employee table and salary table where salary table has a foreign key referencing employee(id), when deleting an employee record from the eomployee table you also will want to remove it from the salary table.
+- We have done this...using `ON DELETE CASCADE` for a foreign key
+
+## Index
+**A type of data structure**, commonly used one is B- tree (it's a binary tree). Essentially it stores values of a particular column in a table. The performance is logarithmic. The B- tree index is sorted
+- Hashtable is another way for index. It's fast but there are some queries that hastable cannot help. E.g., finding people > 40 years old.
+- Other data structures are like R- tree, bitmap index
+- To create an Index
+```
+CREATE INDEX my_index
+ON employee_table (employee_name)
+```
+- Index takes spaces and have to be maintained with the actual data (values on the index col change will have to be changed on the index). 
+- General rule is create index only on the frequently queried column.
+
+## Self Join
+A table joins itself.
+- This will be more performant thatn creating a subquery
+```
+# this gives you all the employees who live in the same location as Jess
+select * from employee as t1
+inner join employee as t2
+on t1.id = t2.id
+where t1.location = t2.location
+and t2.name = "Jess";
+```
+
+## Another way to write join
+There is another way of writing a join.
+```
+select * from tb1 join tb2 on tb1.id = tb2.id
+# can be also written as 
+select * from tb1, tb2 where tb1.id = tb2.id
+
+```
+Actually, there is more another way
+```
+select * from tb1
+join tb2
+using (customer_id) # when you have the identical column name
+```
+## Parameterized Query/ Prepared Statements
+They mean the same thing. Baiscally like templates of SQL statements.
+- use `?` for placeholder for data to be pluuged. 
+
+## Subquery and Derived table
+- derived table is type of subquery. It's used after the FROM.
+```
+select * from (
+	select a, b from <TABLE>
+) as derived_table  # must give derived table an alias
+where derived_table.a = 'something'
+```
+### Coreleated and Uncorelated subquery
+Corelated subqueries cannot be run independently whereas Uncoreleated subqueries can be run independently.
+
+### LIMIT
+LIMIT takes two args, if you supply two, first will be index (starting from 0) and second will be the number of records
+```
+select * from books order by pages desc limit 1, 1 # will give you second highest page num record
+```
+
+## Cardinality
+It has two different meanings:
+- Cardinality in data modeling refers to the relationship of that one table can have with another table, like many to many, one to many...
+- Another meaning is simply the number of possible values for a given column. Like Gender column there areonly female and male and therefore the cardinality is two.
+
+## Index Selectivity
+Formula = cardinality/ num of records * 100%
+- If selectivity of index is low it means the column is not good to be indexed. Like `gender` column
