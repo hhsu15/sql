@@ -272,6 +272,16 @@ SELECT *,
 		ELSE 'not ok'
 	END AS new_col
 FROM <TABLE>
+
+# you can also take the column name out 
+SELECT *, 
+	CASE name
+		WHEN 'something' THEN 'ok'
+		WHEN 'nothing' THEN 'nok'
+		ELSE 'oops'
+	END AS new_col
+FROM <TABLE>
+
 ```
 ## IF 
 You can also use if 
@@ -415,3 +425,38 @@ It has two different meanings:
 ## Index Selectivity
 Formula = cardinality/ num of records * 100%
 - If selectivity of index is low it means the column is not good to be indexed. Like `gender` column
+
+### Clustered Index
+- A clustered index determines the order where the rows of a table are stored on disk. 
+- A cluster index basically contains the actual table level data in the index itself
+- Example: if you create a clustered index on employee_id for Employee table. All of the rows in that table will be phsically sorted by the value of employee_id. This will enhance the speed.
+- Another exmaple, you have a Car table that has customer_id. You can make the customer_id clustered index, then what will happen is the sorted customer_id will be stored in desk. If you try to search for all cars belonging to a single owner, the entries are stored right next to each other(which is why it's called clustered) and therefore the query will run much faster. 
+
+## blocks vs pages
+blocks are smallest units that can be read from or written to a file. Pages are virtual blocks and they have fixed sizes 4k and 2k are most common.
+
+## Database Transaction
+It's basically a concept of "All or nothing". Like your bank transaction, either goes through or fail. No in between. A transaction can contain multiple steps, not just one. Manu new versions RDBMS support transaction but they don't come for free. To describe transaction, remember ACID.
+- ACID
+  - Atomicity: transaction must remain whole - all or nothing
+  - Consistenty: transaction should change the state of database from one consistent state to another
+  - Isolation: a transaction should be independent from another that might be running at the same time.
+  - Durability: change made by a transaction will not disapear if the database encounters some failure
+
+## Optimizer
+So, it goes to the topic how to run your query faster. The `optmizer` will run some statistics and determine the order of running the predicate.
+- say you have multiple conditions, the idea is that you always want the predicate that eliminates the higher number of rows to be evaluated first by the optimizer! 
+- This is a very important concept when it comes to optimization. So essentially we can have the cost optimizer to look thru the values in the columns and let's say we know that column `sex` has 90% male and 10% female, we will essentially prefer to run this `where sex = female` predicate first so we later can deal with less data.
+- This can be applied to other things we are doing - create an optimizer to evaluate by stats
+
+## Bitmap index
+- Normally created for a low cardinality column, like `sex` with only `male` and `female`.
+- It creates two indexes with bit kind like below. With corresponding bit/row. The first row means first row of the table has the value of female and so on.
+------------
+male | female
+------------
+0    |   1
+------------
+1    |  0 
+------------
+1    |  0
