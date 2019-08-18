@@ -460,3 +460,15 @@ male | female
 1    |  0 
 ------------
 1    |  0
+
+# More and More
+- To find a char in a string, use `INSTR` function
+```
+SELECT INSTR(fist_name, 'a') FROM <TABLE>  # will return the index of char in the string. This is case insensetive
+SELECT INSTR(fist_name, BINARY'a') FROM <TABLE>  # this will be case sensetive
+```
+- right strip spaces 
+```
+SELECT RTRIM(fist_name, BINARY'a') FROM <TABLE>  # this will be case sensetive
+
+```
