@@ -472,3 +472,54 @@ SELECT INSTR(fist_name, BINARY'a') FROM <TABLE>  # this will be case sensetive
 SELECT RTRIM(fist_name, BINARY'a') FROM <TABLE>  # this will be case sensetive
 
 ```
+
+## B-Tree Explaination
+To understand B-Tree, we should to understand the following concept
+
+### Disk Structure
+- To access something in the disk, you need to know
+  - Track # 
+  - Sector # 
+  - offset (in the block)
+- So basically Block = (track, sector), and to reach a particular byte, you need to know there three things.
+- each block can store particular number of bytes.
+- When you store a table which contains many rows, rows will be stored in different blocks. If each row needs to take 128 bytes, each block can store 512 bytes. Each block can store 4 rows.
+  - this means to search something you need to search for the number of blocks.
+### Index
+- Now, to reduce the number of blocks that you need to go through, we use Index!
+- We store Index (which is another table)
+- say each row for Index only takes 16 bytes, you will store the Index in less blocks.
+- The idea is to store the index with pointer that takes you to the address exactly where the record is stored. It will require less blocks you need to search! 
+
+### Multi-level Index
+- Basically the index of an index. When the index becomes big (taking too many blocks), you make aother index which each record pointing to a particular block that contains the records of the origibal index
+- you can increase the level of blocks as the data grow
+
+### M-way Serach Tree
+- Extended from binary search tree (you have each node that has two children)
+- With M-way search Tree, you have multiple keys, say you have 20, 50 as your key. It acts like a range. I.e., 15 will go to the left, 25 will go into the middle, 55, will go to the right.
+- It is a **M nodes with M-1 keys** structure.
+- You can also think binary search tree as M-way search tree of dgree of 2. (M=2, key = 2-1)
+```
+# for a 4-way ST, let's say
+k1, k2, k3
+# you have 4 node pointers
+less than k1, between k1 and k2, between k2 and k3, greater than k3
+# for each key, you also have a record pointer
+key1_np, key2_np, key3_np
+```
+
+### B-Tree
+Finally, we will talk about B-Tree. 
+- B-Tree is basically M-way search tree but with the following condition when it comes to creation of the Tree (yes, there are rules that make it a B-tree)
+  - Every node (except for root) has to have m/2 children (to control the heigh of the tree - make it balanced)
+  - Root can have minimum two children
+  - All leaf at the same level (so it's balanced)
+  - Creation process is bottom up
+- refer to the (vedio)[https://www.youtube.com/watch?v=aZjYr87r1b8] how insertion is done.
+- Basically you have to split (creating new node) and change the structure of the tree as needed for every insertion.
+- So, when using B-Tree as Index, you can search something by traversing the tree. Just like M-wayST, each key has record pointer.
+
+### B+ Tree
+B+ Tree is basically B-Tree except you don't have record pointers for every key, but all they keysare presnt in the leaf level. All the record pointers for keys will be copied and included in the leaf level.
+- This natually forms a linked list (that contains all the keys and record pointers)
