@@ -337,6 +337,19 @@ For exmaple, Viewers table and Movies table.
 ### instgram schema
 Refer to `instgram.sql`
 
+## Ranking
+From MySQL 8.0 you can use this to create ranking
+```
+# rank by order amount given each year + month 
+SELECT
+	whatever,
+	RANK() OVER(
+		PARTITION BY YEAR(order_date), MONTH(order_date)
+		ORDER BY YEAR(order_date), MONTH(order_date), order_amount DESC
+	) as order_amt_rank
+FROM orders;
+```
+
 # More SQL thing...
 ## Keys
 - Natural Key/Business Key/Domain Key (are the same thing) VS Artificial Key
